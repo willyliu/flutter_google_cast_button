@@ -10,7 +10,7 @@ class CastButtonWidget extends StatefulWidget {
   final MediaRouteBloc bloc;
   final Color tintColor;
 
-  CastButtonWidget({this.bloc, this.tintColor});
+  CastButtonWidget({required this.bloc,required this.tintColor});
 
   @override
   State<StatefulWidget> createState() => _CastButtonWidgetState();
@@ -18,9 +18,9 @@ class CastButtonWidget extends StatefulWidget {
 
 class _CastButtonWidgetState extends State<CastButtonWidget>
     with SingleTickerProviderStateMixin {
-  AnimationController _animationController;
-  Animation<String> connectingIconTween;
-  MediaRouteBloc _bloc;
+  late AnimationController _animationController;
+  late Animation<String> connectingIconTween;
+  late MediaRouteBloc _bloc;
   static const packageName = "flutter_google_cast_button";
   static const connectingAssets = [
     "images/ic_cast0_black_24dp.png",
@@ -72,8 +72,8 @@ class _CastButtonWidgetState extends State<CastButtonWidget>
     super.dispose();
   }
 
-  Future animationFuture;
-  MediaRouteState currentState;
+  late Future animationFuture;
+  late MediaRouteState currentState;
 
   @override
   Widget build(BuildContext context) {

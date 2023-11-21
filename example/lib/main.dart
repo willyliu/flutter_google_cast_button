@@ -11,7 +11,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  MediaRouteBloc mediaRouteBloc;
+  late MediaRouteBloc mediaRouteBloc;
 
   @override
   void initState() {
@@ -22,7 +22,6 @@ class _MyAppState extends State<MyApp> {
   @override
   void dispose() {
     mediaRouteBloc.close();
-    mediaRouteBloc = null;
     super.dispose();
   }
 
@@ -41,7 +40,7 @@ class _MyAppState extends State<MyApp> {
                   bloc: mediaRouteBloc,
                   tintColor: Colors.deepPurple,
                 ),
-                RaisedButton(
+                ElevatedButton(
                   child: Text("Show cast dialog manually"),
                   onPressed: () => FlutterGoogleCastButton.showCastDialog(),
                 )

@@ -77,7 +77,7 @@ class _CastButtonWidgetState extends State<CastButtonWidget>
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder(
+    return BlocBuilder<MediaRouteBloc, MediaRouteState>(
       bloc: _bloc,
       builder: (context, newState) {
         if (newState is NoDeviceAvailable) {

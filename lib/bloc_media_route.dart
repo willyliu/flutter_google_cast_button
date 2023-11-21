@@ -10,7 +10,23 @@ const _STATE_CONNECTED = 4;
 class MediaRouteBloc extends Bloc<MediaRouteEvent, MediaRouteState> {
   var debugMode = false;
 
-  MediaRouteBloc() {
+  MediaRouteBloc() : super(NoDeviceAvailable()) {
+    on<UpdateRouteStateEvent>((event, emit) {
+      switch (event.nativeState) {
+        case _STATE_UNCONNECTED:
+          emit(Unconnected());
+          break;
+        case _STATE_CONNECTING:
+          emit(Connecting());
+          break;
+        case _STATE_CONNECTED:
+          emit(Connected());
+          break;
+        case _STATE_UNAVAILABLE:
+        default:
+          emit(NoDeviceAvailable());
+      }
+    });
     FlutterGoogleCastButton.castEventStream().listen(
       (event) {
         _printD("MediaRouteBloc listen state changed: $event");
@@ -22,29 +38,6 @@ class MediaRouteBloc extends Bloc<MediaRouteEvent, MediaRouteState> {
         add(UpdateRouteStateEvent(1));
       },
     );
-  }
-
-  @override
-  MediaRouteState get initialState => NoDeviceAvailable();
-
-  @override
-  Stream<MediaRouteState> mapEventToState(MediaRouteEvent event) async* {
-    if (event is UpdateRouteStateEvent) {
-      switch (event.nativeState) {
-        case _STATE_UNCONNECTED:
-          yield Unconnected();
-          break;
-        case _STATE_CONNECTING:
-          yield Connecting();
-          break;
-        case _STATE_CONNECTED:
-          yield Connected();
-          break;
-        case _STATE_UNAVAILABLE:
-        default:
-          yield NoDeviceAvailable();
-      }
-    }
   }
 
   _printD(String message) {
@@ -85,11 +78,9 @@ class MediaRouteEvent extends Equatable {
 }
 
 class UpdateRouteStateEvent extends MediaRouteEvent {
-  int nativeState;
+  final int nativeState;
 
-  UpdateRouteStateEvent(int newState) {
-    nativeState = newState;
-  }
+  UpdateRouteStateEvent(this.nativeState);
 
   @override
   List<Object> get props => ['UpdateRouteStateEvent ${nativeState}'];

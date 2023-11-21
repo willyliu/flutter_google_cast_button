@@ -1,11 +1,14 @@
 package github.showang.flutter_google_cast_button
 
+import android.content.Context
 import androidx.annotation.StyleRes
 import androidx.mediarouter.app.MediaRouteChooserDialog
 import androidx.mediarouter.app.MediaRouteControllerDialog
 import com.google.android.gms.cast.framework.CastContext
 import com.google.android.gms.cast.framework.CastState
 import com.google.android.gms.cast.framework.CastStateListener
+import io.flutter.embedding.engine.plugins.FlutterPlugin
+import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
@@ -14,7 +17,11 @@ import io.flutter.plugin.common.MethodChannel.Result
 import io.flutter.plugin.common.PluginRegistry.Registrar
 import java.lang.Exception
 
-class FlutterGoogleCastButtonPlugin(private val registrar: Registrar, private val castStreamHandler: CastStreamHandler) : MethodCallHandler {
+class FlutterGoogleCastButtonPlugin(private var castStreamHandler: CastStreamHandler? = null,
+                                    private var context: Context? = null,
+                                    private var methodChannel: MethodChannel? = null,
+                                    private var eventChannel: EventChannel? = null) : MethodCallHandler,
+    FlutterPlugin {
     companion object {
         @StyleRes
         var customStyleResId: Int? = null
@@ -24,35 +31,40 @@ class FlutterGoogleCastButtonPlugin(private val registrar: Registrar, private va
 
         @JvmStatic
         fun registerWith(registrar: Registrar) {
-            val streamHandler = CastStreamHandler()
-            instance = FlutterGoogleCastButtonPlugin(registrar, streamHandler)
-            MethodChannel(registrar.messenger(), "flutter_google_cast_button").apply {
-                setMethodCallHandler(instance)
-            }
-            EventChannel(registrar.messenger(), "cast_state_event").apply {
-                setStreamHandler(streamHandler)
-            }
+            instance = FlutterGoogleCastButtonPlugin()
+            instance?.initInstance(registrar.messenger(), registrar.context())
         }
     }
 
-    init {
+    fun initInstance(messenger: BinaryMessenger, context: Context) {
+        this.context = context
+
         // Note: it raises exceptions when the current device does not have Google Play service.
         try {
-            CastContext.getSharedInstance(registrar.activeContext())
+            CastContext.getSharedInstance(context)
         } catch (error: Exception) {
+        }
+
+        instance = FlutterGoogleCastButtonPlugin()
+        castStreamHandler = CastStreamHandler()
+        methodChannel = MethodChannel(messenger, "flutter_google_cast_button").apply {
+            setMethodCallHandler(instance)
+        }
+        eventChannel = EventChannel(messenger, "cast_state_event").apply {
+            setStreamHandler(castStreamHandler)
         }
     }
 
     private val castContext: CastContext?
         // Note: it raises exceptions when the current device does not have Google Play service.
         get() = try {
-            CastContext.getSharedInstance(registrar.activeContext())
+            context?.let { CastContext.getSharedInstance(it) }
         } catch (error: Exception) {
             null
         }
 
     fun onResume() {
-        castStreamHandler.updateState()
+        castStreamHandler?.updateState()
     }
 
     override fun onMethodCall(call: MethodCall, result: Result) {
@@ -66,15 +78,26 @@ class FlutterGoogleCastButtonPlugin(private val registrar: Registrar, private va
     private fun showCastDialog() {
         castContext?.let {
             it.sessionManager?.currentCastSession?.let {
-                MediaRouteControllerDialog(registrar.activeContext(), themeResId)
+                MediaRouteControllerDialog(context, themeResId)
                     .show()
             } ?: run {
-                MediaRouteChooserDialog(registrar.activeContext(), themeResId).apply {
+                MediaRouteChooserDialog(context, themeResId).apply {
                     routeSelector = it.mergedSelector
                     show()
                 }
             }
         }
+    }
+
+    override fun onAttachedToEngine(binding: FlutterPlugin.FlutterPluginBinding) {
+        initInstance(binding.binaryMessenger, binding.applicationContext)
+    }
+
+    override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
+        context = null
+        castStreamHandler = null
+        methodChannel = null
+        eventChannel = null
     }
 }
 

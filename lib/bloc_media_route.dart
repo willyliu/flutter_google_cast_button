@@ -30,12 +30,14 @@ class MediaRouteBloc extends Bloc<MediaRouteEvent, MediaRouteState> {
     FlutterGoogleCastButton.castEventStream().listen(
       (event) {
         _printD("MediaRouteBloc listen state changed: $event");
-        if (event is int) {
+        if (event is int && !isClosed) {
           add(UpdateRouteStateEvent(event));
         }
       },
       onError: (e) {
-        add(UpdateRouteStateEvent(1));
+        if (!isClosed) {
+          add(UpdateRouteStateEvent(1));
+        }
       },
     );
   }

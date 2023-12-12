@@ -7,10 +7,10 @@ import 'package:flutter_google_cast_button/bloc_media_route.dart';
 import 'package:flutter_google_cast_button/flutter_google_cast_button.dart';
 
 class CastButtonWidget extends StatefulWidget {
-  final MediaRouteBloc bloc;
-  final Color tintColor;
+  final MediaRouteBloc? bloc;
+  final Color? tintColor;
 
-  CastButtonWidget({required this.bloc,required this.tintColor});
+  CastButtonWidget({this.bloc, this.tintColor});
 
   @override
   State<StatefulWidget> createState() => _CastButtonWidgetState();

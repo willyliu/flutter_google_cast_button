@@ -7,3 +7,4 @@
 
 build/
 .flutter-plugins-dependencies
+example/.flutter-plugins-dependencies

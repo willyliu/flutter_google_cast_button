@@ -8,6 +8,8 @@ import com.google.android.gms.cast.framework.CastContext
 import com.google.android.gms.cast.framework.CastState
 import com.google.android.gms.cast.framework.CastStateListener
 import io.flutter.embedding.engine.plugins.FlutterPlugin
+import io.flutter.embedding.engine.plugins.activity.ActivityAware
+import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodCall
@@ -21,7 +23,8 @@ class FlutterGoogleCastButtonPlugin(private var castStreamHandler: CastStreamHan
                                     private var context: Context? = null,
                                     private var methodChannel: MethodChannel? = null,
                                     private var eventChannel: EventChannel? = null) : MethodCallHandler,
-    FlutterPlugin {
+    FlutterPlugin,
+    ActivityAware {
     companion object {
         @StyleRes
         var customStyleResId: Int? = null
@@ -37,21 +40,24 @@ class FlutterGoogleCastButtonPlugin(private var castStreamHandler: CastStreamHan
     }
 
     fun initInstance(messenger: BinaryMessenger, context: Context) {
-        this.context = context
+        initInstance(context)
 
-        // Note: it raises exceptions when the current device does not have Google Play service.
-        try {
-            CastContext.getSharedInstance(context)
-        } catch (error: Exception) {
-        }
-
-        instance = FlutterGoogleCastButtonPlugin()
         castStreamHandler = CastStreamHandler()
         methodChannel = MethodChannel(messenger, "flutter_google_cast_button").apply {
             setMethodCallHandler(instance)
         }
         eventChannel = EventChannel(messenger, "cast_state_event").apply {
             setStreamHandler(castStreamHandler)
+        }
+    }
+
+    fun initInstance(context: Context) {
+        this.context = context
+
+        // Note: it raises exceptions when the current device does not have Google Play service.
+        try {
+            CastContext.getSharedInstance(context)
+        } catch (error: Exception) {
         }
     }
 
@@ -90,14 +96,35 @@ class FlutterGoogleCastButtonPlugin(private var castStreamHandler: CastStreamHan
     }
 
     override fun onAttachedToEngine(binding: FlutterPlugin.FlutterPluginBinding) {
-        initInstance(binding.binaryMessenger, binding.applicationContext)
+        instance = FlutterGoogleCastButtonPlugin()
+        instance?.initInstance(binding.binaryMessenger, binding.applicationContext)
     }
 
     override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
-        context = null
+        instance?.resetContext()
         castStreamHandler = null
         methodChannel = null
         eventChannel = null
+    }
+
+    fun resetContext() {
+        context = null
+    }
+
+    override fun onAttachedToActivity(binding: ActivityPluginBinding) {
+        instance?.initInstance(binding.activity)
+    }
+
+    override fun onDetachedFromActivityForConfigChanges() {
+        instance?.resetContext()
+    }
+
+    override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {
+        instance?.initInstance(binding.activity)
+    }
+
+    override fun onDetachedFromActivity() {
+        instance?.resetContext()
     }
 }
 

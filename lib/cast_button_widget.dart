@@ -1,10 +1,12 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_google_cast_button/bloc_media_route.dart';
 import 'package:flutter_google_cast_button/flutter_google_cast_button.dart';
+import 'dart:ui' as ui;
 
 class CastButtonWidget extends StatefulWidget {
   final MediaRouteBloc? bloc;
@@ -57,12 +59,17 @@ class _CastButtonWidgetState extends State<CastButtonWidget>
         var image = ExactAssetImage(path, package: packageName);
         var key = await image.obtainKey(
             createLocalImageConfiguration(context, size: Size(24, 24)));
-        final codec = PaintingBinding.instance.instantiateImageCodec;
-        globalCache.putIfAbsent(key, () => image.load(key, codec),
-            onError: (e, s) => print("preload casting asset error"));
+
+        globalCache.putIfAbsent(key, 
+          () => image.loadBuffer(key, decoder),
+          onError: (e, s) => print("preload casting asset error"));
       });
     }
     connectingIconTween.addListener(() => setState(() {}));
+  }
+
+  Future<ui.Codec> decoder(ImmutableBuffer buffer, {int? cacheHeight, int? cacheWidth, bool allowUpscaling = false}) async {
+    return PaintingBinding.instance.instantiateImageCodecWithSize(buffer);
   }
 
   @override

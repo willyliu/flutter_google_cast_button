@@ -1,3 +1,7 @@
+## 1.0.3
+
+* Fixes the problem of using deprecated instantiateImageCodec method.
+
 ## 1.0.2
 
 * Fixes the problem that clicking cast button will crash.

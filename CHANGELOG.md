@@ -1,3 +1,8 @@
+## 1.0.4
+
+* Updates google-cast-sdk pod to 4.8.0 for building on iOS simulator.
+* Makes example able to build.
+
 ## 1.0.3
 
 * Fixes the problem of using deprecated instantiateImageCodec method.

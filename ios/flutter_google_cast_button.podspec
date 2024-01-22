@@ -17,7 +17,7 @@ A Flutter plugin whitch provides the cast button and sync cast state with it.
   s.static_framework = true
 
   s.dependency 'Flutter'
-  s.dependency 'google-cast-sdk', '~> 4.3'
+  s.dependency 'google-cast-sdk', '~> 4.8.0'
 
   s.ios.deployment_target = '8.0'
 end

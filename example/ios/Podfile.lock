@@ -2,35 +2,35 @@ PODS:
   - Flutter (1.0.0)
   - flutter_google_cast_button (0.0.1):
     - Flutter
-    - google-cast-sdk (~> 4.3)
-  - google-cast-sdk (4.3.2):
-    - google-cast-sdk/Core (= 4.3.2)
-    - Protobuf (~> 3.0)
-  - google-cast-sdk/Core (4.3.2):
-    - Protobuf (~> 3.0)
-  - Protobuf (3.7.0)
+    - google-cast-sdk (~> 4.8.0)
+  - google-cast-sdk (4.8.0):
+    - google-cast-sdk/Core (= 4.8.0)
+    - Protobuf (~> 3.13)
+  - google-cast-sdk/Core (4.8.0):
+    - Protobuf (~> 3.13)
+  - Protobuf (3.25.2)
 
 DEPENDENCIES:
-  - Flutter (from `.symlinks/flutter/ios`)
+  - Flutter (from `Flutter`)
   - flutter_google_cast_button (from `.symlinks/plugins/flutter_google_cast_button/ios`)
 
 SPEC REPOS:
-  https://github.com/CocoaPods/Specs.git:
+  trunk:
     - google-cast-sdk
     - Protobuf
 
 EXTERNAL SOURCES:
   Flutter:
-    :path: ".symlinks/flutter/ios"
+    :path: Flutter
   flutter_google_cast_button:
     :path: ".symlinks/plugins/flutter_google_cast_button/ios"
 
 SPEC CHECKSUMS:
-  Flutter: 0e3d915762c693b495b44d77113d4970485de6ec
-  flutter_google_cast_button: 93329ae1132c2b70835de836bbdac20e20a03fe4
-  google-cast-sdk: 845b740ef8c47919185651ba62b36b2ed0cfab40
-  Protobuf: 7a877b7f3e5964e3fce995e2eb323dbc6831bb5a
+  Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
+  flutter_google_cast_button: 37d7b5f090538544fc15970e61903005b5c70700
+  google-cast-sdk: afeb1aac0744b1bc4f70bc3db8468e33fabbff38
+  Protobuf: 34db13339da0d02d64fa8a2ac6a124cfcc603703
 
-PODFILE CHECKSUM: ebd43b443038e611b86ede96e613bd6033c49497
+PODFILE CHECKSUM: 7b0d07bdbe0a21e4c70e8292d899831b73ebdedb
 
-COCOAPODS: 1.8.4
+COCOAPODS: 1.14.3
